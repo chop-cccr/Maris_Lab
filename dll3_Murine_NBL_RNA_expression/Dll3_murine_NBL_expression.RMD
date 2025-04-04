@@ -1,26 +1,27 @@
-########### ########### ########### ########### 
-########### Notes ########### ########### 
-#File Location: /mnt/isilon/maris_lab/target_nbl_ngs/Alvin/dll3_Murine_NB_Expression
+---
+title: "ddl3 expression in Murine NBL Models"
+author: "Alvin Farrel"
+date: "2025-04-04"
+output: html_document
+---
 
-#REQUEST:
-#Thursday, April 3, 2025 at 5:10 PM
-#Alvin, Tim, Minu—any chance in all of your spare time that you could give us a sense of DLL3 expression in the allografts and murine cell lines?
-#Thanks very much.
-#John
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-#Friday, April 4, 2025 at 12:21 PM
-#Let us take a look at the RNA seq data and get back to you. Would be nice to see Dll3 in comparison with Gpc2, Alk, Dlk1, B7h3. Alvin, is this something Steven or Eric could do for us?
-#Best wishes
-#John M. Maris, MD
+## R Markdown
 
-########### ########### ########### 
-########### ########### ########### ########### 
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Getting expression data from MDA RNAseq models
+
+```{r}
 
 library(ggplot2)
 
-
-
-
+#Getting expression data from MDA RNAseq models
 Dll3 = system("grep \"ENSMUSG00000003436\" /mnt/isilon/maris_lab/target_nbl_ngs/MDX_TH-MYCN_CAG_MYC_Genomics/RNAseq/quants/*genes.results",intern=T)
 Gpc2 = system("grep \"ENSMUSG00000029510\" /mnt/isilon/maris_lab/target_nbl_ngs/MDX_TH-MYCN_CAG_MYC_Genomics/RNAseq/quants/*genes.results",intern=T)
 Alk = system("grep \"ENSMUSG00000055471\" /mnt/isilon/maris_lab/target_nbl_ngs/MDX_TH-MYCN_CAG_MYC_Genomics/RNAseq/quants/*genes.results",intern=T)
@@ -33,7 +34,7 @@ Alk_2 = system("grep \"ENSMUSG00000055471\" /mnt/isilon/maris_lab/target_nbl_ngs
 Dlk1_2= system("grep \"ENSMUSG00000040856\" /mnt/isilon/maris_lab/target_nbl_ngs/Azenta_Project_30_1020175105/30-1020175105/quants/*genes.results",intern=T)
 B7h3_Cd276_2= system("grep \"ENSMUSG00000035914\" /mnt/isilon/maris_lab/target_nbl_ngs/Azenta_Project_30_1020175105/30-1020175105/quants/*genes.results",intern=T)
 
-
+## Create dataframe
 MDA_Gene_table = rbind(
   
   data.frame(Gene = "Dll3", read.delim(text=c(Dll3,Dll3_2), header = F)),
@@ -50,12 +51,11 @@ MDA_Gene_table$Name = sapply(MDA_Gene_table$Name, function(X)  strsplit(gsub("/m
 MDA_Gene_table$Name = sapply(MDA_Gene_table$Name, function(X)  strsplit(gsub("/mnt/isilon/maris_lab/target_nbl_ngs/MDX_TH-MYCN_CAG_MYC_Genomics/RNAseq/quants/|.genes.results"," ",X), split=":")[[1]][1] )
 
 
-ggplot(MDA_Gene_table, aes(x=Name,y=TPM, fill=Gene)) + geom_bar(stat = "identity", position = "dodge")+
+ggplot2::ggplot(MDA_Gene_table, aes(x=Name,y=TPM, fill=Gene)) + geom_bar(stat = "identity", position = "dodge")+
   theme_classic()+
   theme(axis.text.x = element_text(size=12, angle = 90,hjust = 1,vjust=0.5))+   #, color=X_Axis_colors))+
   theme(axis.text.y = element_text(size=12))+    #,color = c(rep("darkgreen",Splice_count),rep("black",NoSplice_count-3),rep("darkred",3))))+
   theme(axis.title.x = element_blank())
-
 
 ggplot(MDA_Gene_table, aes(x=Name,y=log10(TPM+1), fill=Gene)) + geom_bar(stat = "identity", position = "dodge")+
   theme_bw()+
@@ -74,8 +74,7 @@ ggplot(subset(MDA_Gene_table, Gene=="Dll3"), aes(x=Name,y=TPM)) + geom_bar(stat 
   theme(axis.title.x = element_blank())
 
 
-
-
+# Get data from Weiss models
 Dll3_3 = system("grep \"ENSMUSG00000003436\" /mnt/isilon/maris_lab/target_nbl_ngs/MouseRNASeq_Weiss/quants/*genes.results",intern=T)
 Gpc2_3 = system("grep \"ENSMUSG00000029510\" /mnt/isilon/maris_lab/target_nbl_ngs/MouseRNASeq_Weiss/quants/*genes.results",intern=T)
 Alk_3 = system("grep \"ENSMUSG00000055471\" /mnt/isilon/maris_lab/target_nbl_ngs/MouseRNASeq_Weiss/quants/*genes.results",intern=T)
@@ -83,6 +82,7 @@ Dlk1_3= system("grep \"ENSMUSG00000040856\" /mnt/isilon/maris_lab/target_nbl_ngs
 B7h3_Cd276_3= system("grep \"ENSMUSG00000035914\" /mnt/isilon/maris_lab/target_nbl_ngs/MouseRNASeq_Weiss/quants/*genes.results",intern=T)
 
 
+#Create dataframe with Weiss models and genes of interest.
 MDA_Gene_table_Weiss = rbind(
   
   data.frame(Gene = "Dll3", read.delim(text=Dll3_3, header = F)),
@@ -104,6 +104,7 @@ ggplot(MDA_Gene_table_Weiss, aes(x=Name,y=TPM, fill=Gene)) + geom_bar(stat = "id
   theme(axis.text.y = element_text(size=12))+    #,color = c(rep("darkgreen",Splice_count),rep("black",NoSplice_count-3),rep("darkred",3))))+
   theme(axis.title.x = element_blank())
 
+
 ggplot(MDA_Gene_table_Weiss, aes(x=Name,y=log10(TPM+1), fill=Gene)) + geom_bar(stat = "identity", position = "dodge")+
   theme_bw()+
   theme(axis.text.x = element_text(size=12, angle = 90,hjust = 1,vjust=0.5))+   #, color=X_Axis_colors))+
@@ -114,4 +115,4 @@ ggplot(MDA_Gene_table_Weiss, aes(x=Name,y=log10(TPM+1), fill=Gene)) + geom_bar(s
 
 
 
-
+```
